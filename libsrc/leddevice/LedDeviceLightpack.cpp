@@ -236,15 +236,23 @@ int LedDeviceLightpack::write(const ColorRgb * ledValues, int size)
 {
 	int count = std::min(_ledCount, size);
 
+        // Lightpack order is wrong
+        // Left <--> Right
+        // 9 8 7 6 5 2 1 0 3 4
+        int order_map[10] = {4,3,0,1,2,5,6,7,8,9};
+
+        int j = 0;
 	for (int i = 0; i < count ; ++i)
 	{
+                j = order_map[i];
+
 		const ColorRgb & color = ledValues[i];
 
 		// copy the most significant bits of the rgb values to the first three bytes
 		// offset 1 to accomodate for the command byte
-		_ledBuffer[6*i+1] = color.red;
-		_ledBuffer[6*i+2] = color.green;
-		_ledBuffer[6*i+3] = color.blue;
+		_ledBuffer[6*j+1] = color.red;
+		_ledBuffer[6*j+2] = color.green;
+		_ledBuffer[6*j+3] = color.blue;
 
 		// leave the next three bytes on zero...
 		// 12-bit values having zeros in the lowest 4 bits which is almost correct, but it saves extra
@@ -322,7 +330,8 @@ libusb_device_handle * LedDeviceLightpack::openDevice(libusb_device *device)
 		}
 	}
 
-	error = libusb_claim_interface(handle, LIGHTPACK_INTERFACE);
+	//error = libusb_claim_interface(handle, LIGHTPACK_INTERFACE);
+	error = LIBUSB_SUCCESS; //libusb_claim_interface(handle, LIGHTPACK_INTERFACE);
 	if (error != LIBUSB_SUCCESS)
 	{
 		std::cerr << "unable to claim interface(" << error << "): " << libusb_error_name(error) << std::endl;
