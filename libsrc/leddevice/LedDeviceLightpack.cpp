@@ -330,8 +330,7 @@ libusb_device_handle * LedDeviceLightpack::openDevice(libusb_device *device)
 		}
 	}
 
-	//error = libusb_claim_interface(handle, LIGHTPACK_INTERFACE);
-	error = LIBUSB_SUCCESS; //libusb_claim_interface(handle, LIGHTPACK_INTERFACE);
+	error = libusb_claim_interface(handle, LIGHTPACK_INTERFACE);
 	if (error != LIBUSB_SUCCESS)
 	{
 		std::cerr << "unable to claim interface(" << error << "): " << libusb_error_name(error) << std::endl;
